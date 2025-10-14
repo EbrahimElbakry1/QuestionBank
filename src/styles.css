@@ -1,0 +1,259 @@
+/* ===========================
+   Global theme tokens – Light look
+   =========================== */
+:root {
+  --bg: #f9fafb;                /* page background */
+  --surface: #ffffff;           /* cards/forms */
+  --surface-2: #f3f4f6;         /* subtle header/footer bg */
+  --text: #111827;              /* dark gray text */
+  --muted: #6b7280;             /* secondary gray text */
+  --brand: #2563eb;             /* blue-600 */
+  --brand-strong: #1d4ed8;      /* blue-700 */
+  --success: #16a34a;           /* green-600 */
+  --danger: #dc2626;            /* red-600 */
+  --radius: 12px;
+  --shadow: 0 6px 18px rgba(0,0,0,.08);
+}
+
+/* ===========================
+   Base layout
+   =========================== */
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  color: var(--text);
+  background: var(--bg);
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.site-header,
+.site-footer {
+  text-align: center;
+  padding: 20px 16px;
+  background: var(--surface-2);
+}
+
+.title { 
+  margin: 0; 
+  font-weight: 800;
+  font-size: 1.8rem;
+}
+
+/* Wider content area */
+.container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 20px 48px;
+  display: grid;
+  gap: 20px;
+}
+
+/* ===========================
+   Card shell
+   =========================== */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid #e5e7eb;
+  overflow: clip;
+  display: grid;
+}
+
+.card__head,
+.card__body,
+.card__foot {
+  padding: 20px;
+}
+
+.card__head {
+  background: var(--surface-2);
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.card__foot {
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* ===========================
+   LARGE screens/cards
+   =========================== */
+.card--lg {
+  width: 90%;
+  max-width: 980px;
+  min-height: 65vh;
+  margin: 24px auto;
+  padding: 32px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;  
+  align-items: center;      
+  text-align: center;
+  gap: 16px;
+}
+
+.card--lg .card__head,
+.card--lg .card__body,
+.card--lg .card__foot {
+  padding: 28px;
+}
+
+.card--lg .card__body.scrollable {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+/* ===========================
+   Quiz content
+   =========================== */
+.question {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 6px 0 16px;
+}
+.answers {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+}
+
+/* ===========================
+   Buttons
+   =========================== */
+.btn {
+  appearance: none;
+  border: none;
+  padding: 14px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color .2s ease, transform .05s ease;
+}
+.btn:active { transform: translateY(1px) scale(.99); }
+.btn[disabled] { opacity: .6; pointer-events: none; }
+
+.btn[data-variant="primary"] {
+  background: var(--brand);
+  color: #fff;
+}
+.btn[data-variant="primary"]:hover { background: var(--brand-strong); }
+
+.btn[data-variant="secondary"] {
+  background: var(--surface-2);
+  color: var(--text);
+}
+.btn[data-variant="secondary"]:hover { background: #e5e7eb; }
+
+.btn[data-variant="ghost"] {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid #d1d5db;
+}
+.btn[data-variant="ghost"]:hover {
+  color: var(--text);
+  border-color: #9ca3af;
+}
+
+/* Answer buttons */
+.answer {
+  text-align: left;
+  background: var(--surface-2);
+  color: var(--text);
+}
+.answer[data-state="correct"] {
+  outline: 2px solid var(--success);
+}
+.answer[data-state="wrong"] {
+  outline: 2px solid var(--danger);
+}
+
+/* ===========================
+   Subject grid
+   =========================== */
+.subject-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 14px;
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+}
+.subject-btn {
+  padding: 16px 12px;
+  border-radius: 12px;
+  text-align: center;
+  background: var(--surface-2);
+  color: var(--text);
+  font-weight: 700;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  transition: background-color .2s ease, transform .05s ease;
+  min-height: 56px;
+}
+.subject-btn:hover { background: #e5e7eb; }
+.subject-btn:active { transform: translateY(1px) scale(.99); }
+
+@media (max-width: 900px) {
+  .subject-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+@media (max-width: 520px) {
+  .subject-grid { grid-template-columns: 1fr; }
+}
+
+/* ===========================
+   Form inputs
+   =========================== */
+input[type="text"],
+input[type="password"],
+input[type="number"] {
+  width: 100%;
+  max-width: 420px;
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 1rem;
+  outline: none;
+}
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 2px rgba(37,99,235,0.2);
+}
+
+/* ===========================
+   Typography
+   =========================== */
+.wizara__title {
+  font-weight: 800;
+  font-size: 1.2rem;
+  margin: 0 0 6px;
+}
+.wizara__subtitle { margin: 0; color: var(--muted); }
+.intro { margin: 10px 0 14px; color: var(--muted); }
+
+.result-title {
+  font-size: 2rem;
+  line-height: 1.2;
+  margin: 0 0 10px;
+}
+.result-intro,
+.result-score {
+  font-size: 1.1rem;
+}
+
