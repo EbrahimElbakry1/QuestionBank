@@ -1,0 +1,170 @@
+:root {
+  --brand: #2563eb;
+  --brand-dark: #1e40af;
+  --text: #111827;
+  --muted: #6b7280;
+  --bg: #f9fafb;
+  --radius: 10px;
+  --shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* General */
+.landing-page {
+  font-family: "Inter", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 60px;
+  background: white;
+  box-shadow: var(--shadow);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.logo img {
+  height: 80px; /* increase this value */
+  width: auto;
+  margin-right: 10px;
+}
+
+
+.btn-login {
+  background: transparent;
+  border: 2px solid var(--brand);
+  color: var(--brand);
+  padding: 8px 18px;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-login:hover {
+  background: var(--brand);
+  color: white;
+}
+
+/* Hero */
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 80px 60px;
+  flex-wrap: wrap;
+}
+.hero-text {
+  max-width: 480px;
+}
+.hero-text h1 {
+  font-size: 2.8rem;
+  margin-bottom: 16px;
+}
+.hero-text p {
+  color: var(--muted);
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+.hero-img img {
+  max-width: 440px;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+
+/* Buttons */
+.btn-primary {
+  background: var(--brand);
+  color: white;
+  padding: 12px 24px;
+  border-radius: var(--radius);
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+.btn-primary:hover {
+  background: var(--brand-dark);
+}
+
+/* How It Works */
+.how-it-works {
+  text-align: center;
+  padding: 80px 20px;
+  background: white;
+}
+.steps {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 40px;
+  margin-top: 40px;
+}
+.step {
+  width: 220px;
+}
+.step span {
+  font-size: 1.8rem;
+}
+.step h3 {
+  margin-top: 10px;
+}
+
+/* Why Choose */
+.why {
+  padding: 80px 20px;
+  background: var(--bg);
+  text-align: center;
+}
+.features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 40px;
+}
+.feature {
+  background: white;
+  padding: 20px 30px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  font-weight: 600;
+}
+
+/* CTA */
+.cta {
+  text-align: center;
+  padding: 100px 20px;
+  background: var(--brand);
+  color: white;
+}
+.cta button {
+  background: white;
+  color: var(--brand);
+  border: none;
+  padding: 12px 24px;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 20px;
+}
+.cta button:hover {
+  background: var(--brand-dark);
+  color: white;
+}
+
+/* Footer */
+.footer {
+  background: white;
+  padding: 20px;
+  text-align: center;
+  color: var(--muted);
+}

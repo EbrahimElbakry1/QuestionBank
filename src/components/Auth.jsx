@@ -1,90 +1,110 @@
 import React, { useState } from "react";
+import "../styles/auth.css";
+import logo from "../assets/logo.png";
+import useAuth from "../hooks/useAuth.js";
 
 export default function Auth({ onDone }) {
-  const [mode, setMode] = useState("choice"); // "choice" | "login" | "signup"
-  const [username, setUsername] = useState("");
+  const { login, signUp } = useAuth();
+  const [mode, setMode] = useState("login");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setMessage(null);
+    setError(null);
+    setLoading(true);
+
+    if (mode === "login") {
+      const res = await login(email, password);
+      setLoading(false);
+      if (!res.success) return setError(res.message);
+      setMessage("✅ Logged in successfully!");
+      onDone?.("login", email, password);
+    } else {
+      const res = await signUp(email, password);
+      setLoading(false);
+      if (!res.success) return setError(res.message);
+      setMessage(res.message);
+    }
+  };
 
   return (
-    <section className="card card--lg" aria-labelledby="auth-heading">
-      <h2 id="auth-heading" className="result-title">Welcome</h2>
+    <div className="auth-shell">
+      <div className="auth-card">
+        <div className="auth-brand">
+          <img src={logo} alt="Wizara Prep logo" className="auth-logo" />
+        </div>
 
-      {mode === "choice" && (
-        <>
-          <div className="intro">
-            <div>✨ Welcome to [Your Website Name]</div>
-            <div>Your all-in-one practice hub for Thanaweya Amma exam prep.</div>
-            <div>Here you’ll find:</div>
-            <div>✅ Official questions from the Ministry’s Question Bank</div>
-            <div>✅ Organized by subject & topic for easier practice</div>
-            <div>✅ Instant access anytime, anywhere</div>
-            <div>✅ A simple, distraction-free environment to focus on studying</div>
-            <div>Log in to start practicing, track your progress, and boost your confidence before the real exam!</div>
-          </div>
-          <div className="card__foot" style={{ justifyContent: "center" }}>
-            <button
-              className="btn"
-              data-variant="primary"
-              onClick={() => setMode("login")}
-            >
-              Log In
-            </button>
-            <button
-              className="btn"
-              data-variant="secondary"
-              onClick={() => setMode("signup")}
-            >
-              Sign Up
-            </button>
-          </div>
-        </>
-      )}
+        <h2 className="auth-title">
+          {mode === "login" ? "Welcome back" : "Create your account"}
+        </h2>
 
-      {mode !== "choice" && (
-        <form
-          className="card__body"
-          onSubmit={(e) => {
-            e.preventDefault();
-            onDone(mode, username.trim(), password.trim());
-          }}
-        >
-          <div style={{ display: "grid", gap: 10 }}>
+        <form className="auth-form" onSubmit={submit}>
+          <label className="auth-label">
             <input
-              aria-label="Username"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="btn"
-              style={{ textAlign: "left" }}
+              type="email"
+              autoComplete="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
+          </label>
+
+          <label className="auth-label">
             <input
               type="password"
-              aria-label="Password"
+              autoComplete={mode === "login" ? "current-password" : "new-password"}
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="btn"
-              style={{ textAlign: "left" }}
               required
             />
-          </div>
+          </label>
 
-          <div className="card__foot" style={{ justifyContent: "center" }}>
-            <button className="btn" data-variant="primary" type="submit">
-              {mode === "login" ? "Log In" : "Create Account"}
-            </button>
-            <button
-              className="btn"
-              data-variant="ghost"
-              onClick={() => setMode("choice")}
-              type="button"
-            >
-              Back
-            </button>
-          </div>
+          <button type="submit" className="auth-submit" disabled={loading}>
+            {loading
+              ? "Please wait..."
+              : mode === "login"
+              ? "LOGIN"
+              : "SIGN UP"}
+          </button>
         </form>
-      )}
-    </section>
+
+        {/* Message / Error feedback */}
+        {error && <p className="auth-error">{error}</p>}
+        {message && <p className="auth-success">{message}</p>}
+
+        <div className="auth-switch">
+          {mode === "login" ? (
+            <>
+              <span>Don’t have an account?</span>
+              <button
+                type="button"
+                className="auth-link"
+                onClick={() => setMode("signup")}
+              >
+                Sign up
+              </button>
+            </>
+          ) : (
+            <>
+              <span>Already have an account?</span>
+              <button
+                type="button"
+                className="auth-link"
+                onClick={() => setMode("login")}
+              >
+                Log in
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

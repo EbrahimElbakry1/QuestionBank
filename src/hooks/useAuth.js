@@ -7,7 +7,7 @@ export default function useAuth() {
 
   // Watch for Supabase auth changes
   useEffect(() => {
-    const session = supabase.auth.getSession().then(({ data }) => {
+    supabase.auth.getSession().then(({ data }) => {
       setUser(data?.session?.user || null);
     });
 
@@ -22,13 +22,43 @@ export default function useAuth() {
 
   // 🔐 Sign Up
   const signUp = async (email, password) => {
+    if (password.length < 8) {
+      return {
+        success: false,
+        message: "Password must be at least 8 characters long.",
+      };
+    }
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/app`,
+      },
     });
-    if (error) throw error;
-    setUser(data?.user || null);
-    return data?.user;
+
+    if (error) {
+      let message = "Something went wrong. Please try again.";
+
+      if (error.message.toLowerCase().includes("password")) {
+        message = "Password must be at least 8 characters long.";
+      } else if (error.message.includes("rate limit")) {
+        message = "Too many attempts. Please wait and try again later.";
+      } else if (error.message.includes("invalid email")) {
+        message = "Please enter a valid email address.";
+      }
+
+      return { success: false, message };
+    }
+
+    // Force sign out to prevent unverified access
+    await supabase.auth.signOut();
+
+    return {
+      success: true,
+      message:
+        "✅ We've sent a confirmation link to your email. Please verify before logging in.",
+    };
   };
 
   // 🔑 Log In
@@ -37,9 +67,20 @@ export default function useAuth() {
       email,
       password,
     });
-    if (error) throw error;
+
+    if (error) {
+      let message = "Something went wrong. Please try again.";
+
+      if (error.message.includes("Invalid login credentials")) {
+        message = "Incorrect email or password.";
+      } else if (error.message.includes("Email not confirmed")) {
+        message = "Please confirm your email before logging in.";
+      }
+      return { success: false, message };
+    }
+
     setUser(data?.user || null);
-    return data?.user;
+    return { success: true, user: data.user };
   };
 
   // 🚪 Log Out
