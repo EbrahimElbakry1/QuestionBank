@@ -4,31 +4,33 @@ import useAuth from "./hooks/useAuth.js";
 import useQuestions from "./hooks/useQuestions.js";
 import { supabase } from "./services/supabaseClient.js";
 import Auth from "./components/Auth.jsx";
-import SubjectGrid from "./components/SubjectGrid.jsx";
 import MistakesPicker from "./components/MistakesPicker.jsx";
 import NewQuizSetup from "./components/NewQuizSetup.jsx";
 import Quiz from "./components/Quiz.jsx";
 import Result from "./components/Result.jsx";
+import Header from "./components/Header.jsx";
+import "./styles/dashboard.css";
 
 const SUBJECTS = [
-  "Mathematics",
-  "Physics",
-  "History",
-  "Geography",
-  "Arabic",
-  "Chemistry",
-  "English",
-  "Biology",
-  "Statistics",
+  "📐 Mathematics",
+  "⚗️ Physics",
+  "📚 History",
+  "🌍 Geography",
+  "🕌 Arabic",
+  "🧪 Chemistry",
+  "🇬🇧 English",
+  "🧠 Biology",
+  "📊 Statistics",
 ];
 
 export default function QuizApp() {
+  // ✅ Test Supabase connection
   useEffect(() => {
     async function testConnection() {
       try {
         const { data, error } = await supabase.from("profile").select("*").limit(1);
         if (error) console.error("❌ Supabase connection failed:", error.message);
-        else console.log("✅ Supabase connected successfully! Sample data:", data);
+        else console.log("✅ Supabase connected successfully!", data);
       } catch (err) {
         console.error("🚨 Unexpected Supabase error:", err);
       }
@@ -36,6 +38,7 @@ export default function QuizApp() {
     testConnection();
   }, []);
 
+  // State management
   const [screen, setScreen] = useState("auth");
   const [subject, setSubject] = useState(null);
   const [finalScore, setFinalScore] = useState(0);
@@ -95,10 +98,10 @@ export default function QuizApp() {
 
   const displayName = user?.email ?? user?.user_metadata?.username ?? "User";
 
+  // ====================== AUTH PAGE ======================
   if (!user || screen === "auth") {
     return (
       <div className="page">
-    
         <main className="container">
           <Auth onDone={handleAuthDone} />
         </main>
@@ -109,40 +112,107 @@ export default function QuizApp() {
     );
   }
 
+  // ====================== MAIN DASHBOARD ======================
+  if (screen === "subjects") {
+    return (
+      <div className="dashboard-page">
+        <Header username={displayName} onLogout={() => { logout(); setScreen("auth"); }} />
+
+        <div className="dashboard-container">
+          <h2>Welcome back</h2>
+          <p>Choose a subject below to start practicing.</p>
+
+          <div className="subject-grid">
+            {SUBJECTS.map((subj) => (
+              <div
+                key={subj}
+                className="subject-card"
+                onClick={() => pickSubject(subj.replace(/^[^\s]+\s/, ""))} // remove emoji when passing
+              >
+                {subj}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <footer className="site-footer">
+          <small>© {new Date().getFullYear()} Wizara Prep</small>
+        </footer>
+      </div>
+    );
+  }
+
+  // ====================== OTHER SCREENS ======================
   return (
     <div className="page">
-      <header className="site-header">
-        <h1 className="title">Wizara Prep</h1>
-        <div style={{ marginTop: 8 }}>
-          <small>
-            Logged in as <strong>{displayName}</strong> ·{" "}
-          </small>
-          <button className="btn" data-variant="ghost" onClick={() => { logout(); setScreen("auth"); }}>
-            Log out
-          </button>
-        </div>
-      </header>
+      {screen === "hub-mode" && (
+        <section className="card card--lg" aria-labelledby="mode-heading">
+          <h2 id="mode-heading" className="result-title">
+            Subject: {subject}
+          </h2>
+          <div className="card__foot" style={{ justifyContent: "center" }}>
+            <button
+              className="btn"
+              data-variant="primary"
+              onClick={() => setScreen("mistakes-setup")}
+            >
+              Quiz on Past Mistakes
+            </button>
+            <button
+              className="btn"
+              data-variant="secondary"
+              onClick={() => setScreen("new-setup")}
+            >
+              Quiz on New Questions
+            </button>
+          </div>
+          <div className="card__foot" style={{ justifyContent: "center" }}>
+            <button className="btn" data-variant="ghost" onClick={backToSubjects}>
+              Back to Subjects
+            </button>
+          </div>
+        </section>
+      )}
 
-      <main className="container" aria-live="polite">
-        {screen === "subjects" && (
-          <section className="card">
-            <div className="card__head">
-              <div className="wizara">
-                <p className="wizara__title">✨ From the <strong>Wizara Question Bank</strong></p>
-                <p className="wizara__subtitle">✔ Practice directly with official Wizara questions.</p>
-              </div>
-            </div>
-            <div className="card__body">
-              <p className="intro">Pick a subject:</p>
-              <SubjectGrid subjects={SUBJECTS} onPick={pickSubject} />
-            </div>
-          </section>
-        )}
-      </main>
- 
-      <footer className="site-footer">
-        <small>© {new Date().getFullYear()} Wizara Prep</small>
-      </footer>
+      {screen === "mistakes-setup" && subject && (
+        <MistakesPicker
+          username={displayName}
+          subject={subject}
+          onBack={() => setScreen("hub-mode")}
+          onStart={beginMistakesQuiz}
+        />
+      )}
+
+      {screen === "new-setup" && subject && (
+        <NewQuizSetup
+          subject={subject}
+          onBack={() => setScreen("hub-mode")}
+          onStart={beginNewQuiz}
+        />
+      )}
+
+      {screen === "quiz" && subject && (
+        <Quiz
+          username={displayName}
+          subject={subject}
+          questions={quizSet}
+          loading={overrideQuestions?.type === "new" ? loading : false}
+          error={error}
+          onRetry={refetch}
+          onFinish={finishQuiz}
+          onBack={() => setScreen("hub-mode")}
+          minutes={timerMinutes}
+        />
+      )}
+
+      {screen === "result" && (
+        <Result
+          subject={subject}
+          score={finalScore}
+          total={quizSet.length}
+          onAgain={backToSubjects}
+        />
+      )}
     </div>
   );
 }
